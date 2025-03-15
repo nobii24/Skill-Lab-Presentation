@@ -1,80 +1,68 @@
-#include <stdio.h>
-#include <stdlib.h>
 
-// Structure for a BST node
-struct Node {
-    int data;
-    struct Node *left, *right;
+//reverse a string using stack dsa problem in c
+
+#include <stdio.h>
+#include <string.h>
+
+#define MAX 100  // Maximum size of the stack
+
+// Stack structure
+struct Stack {
+    int top;
+    char items[MAX];
 };
 
-// Function to create a new node
-struct Node* newNode(int data) {
-    struct Node* node = (struct Node*)malloc(sizeof(struct Node));
-    node->data = data;
-    node->left = node->right = NULL;
-    return node;
+// Function to initialize the stack
+void initStack(struct Stack *s) {
+    s->top = -1;
 }
 
-// Inorder traversal to store BST elements in an array
-void storeInorder(struct Node* root, int arr[], int *index) {
-    if (root == NULL)
-        return;
-    storeInorder(root->left, arr, index);
-    arr[(*index)++] = root->data;
-    storeInorder(root->right, arr, index);
+// Function to check if the stack is empty
+int isEmpty(struct Stack *s) {
+    return s->top == -1;
 }
 
-// Function to count pairs with sum X using two-pointer technique
-int countPairs(int arr1[], int size1, int arr2[], int size2, int X) {
-    int i = 0, j = size2 - 1, count = 0;
-
-    while (i < size1 && j >= 0) {
-        int sum = arr1[i] + arr2[j];
-
-        if (sum == X) {  // Found a pair
-            count++;
-            i++;
-            j--;
-        } else if (sum < X) {
-            i++;  // Move right in BST1
-        } else {
-            j--;  // Move left in BST2
-        }
+// Function to push an element onto the stack
+void push(struct Stack *s, char ch) {
+    if (s->top < MAX - 1) {
+        s->items[++(s->top)] = ch;
     }
-    return count;
 }
 
-// Wrapper function to count pairs from 2 BSTs
-int countPairsFromBSTs(struct Node* root1, struct Node* root2, int X) {
-    // Store elements of BST1 in an array
-    int arr1[100], arr2[100]; 
-    int size1 = 0, size2 = 0;
-
-    storeInorder(root1, arr1, &size1);
-    storeInorder(root2, arr2, &size2);
-
-    // Count pairs
-    return countPairs(arr1, size1, arr2, size2, X);
+// Function to pop an element from the stack
+char pop(struct Stack *s) {
+    if (!isEmpty(s)) {
+        return s->items[(s->top)--];
+    }
+    return '\0';
 }
 
-// Driver Code
+// Function to reverse a string using a stack
+void reverseString(char str[]) {
+    struct Stack s;
+    initStack(&s);
+    int n = strlen(str);
+
+    // Push all characters of the string onto the stack
+    for (int i = 0; i < n; i++) {
+        push(&s, str[i]);
+    }
+
+    // Pop characters from stack and store back in the string
+    for (int i = 0; i < n; i++) {
+        str[i] = pop(&s);
+    }
+}
+
 int main() {
-    // BST 1
-    struct Node* root1 = newNode(5);
-    root1->left = newNode(3);
-    root1->right = newNode(7);
-    root1->left->left = newNode(2);
-    root1->left->right = newNode(4);
+    char str[MAX];
 
-    // BST 2
-    struct Node* root2 = newNode(10);
-    root2->left = newNode(6);
-    root2->right = newNode(15);
-    root2->left->left = newNode(3);
-    root2->left->right = newNode(8);
+    printf("Enter a string: ");
+    scanf("%s", str);
 
-    int X = 10;
-    printf("Number of pairs with sum %d: %d\n", X, countPairsFromBSTs(root1, root2, X));
+    reverseString(str);
+
+    printf("Reversed string: %s\n", str);
 
     return 0;
 }
