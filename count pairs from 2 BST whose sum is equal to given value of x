@@ -1,82 +1,25 @@
-//count pairs from 2 BST whose sum is equal to given value of x in c
+class Node:
+    def __init__(self, key): self.key, self.left, self.right = key, None, None
 
-#include <stdio.h>
-#include <stdlib.h>
+def inorder(root, s):
+    if root: inorder(root.left, s); s.add(root.key); inorder(root.right, s)
 
-// Structure for a BST node
-struct Node {
-    int data;
-    struct Node *left, *right;
-};
+def countPairs(root1, root2, x):
+    s, count = set(), 0
+    inorder(root1, s)
+    def findPairs(root):
+        nonlocal count
+        if root:
+            findPairs(root.left)
+            count += (x - root.key in s)
+            findPairs(root.right)
+    findPairs(root2)
+    return count
 
-// Function to create a new node
-struct Node* newNode(int data) {
-    struct Node* node = (struct Node*)malloc(sizeof(struct Node));
-    node->data = data;
-    node->left = node->right = NULL;
-    return node;
-}
+root1, root2 = Node(5), Node(10)
+root1.left, root1.right = Node(3), Node(7)
+root1.left.left, root1.left.right = Node(2), Node(4)
+root2.left, root2.right = Node(6), Node(15)
+root2.left.left, root2.left.right = Node(3), Node(8)
 
-// Inorder traversal to store BST elements in an array
-void storeInorder(struct Node* root, int arr[], int *index) {
-    if (root == NULL)
-        return;
-    storeInorder(root->left, arr, index);
-    arr[(*index)++] = root->data;
-    storeInorder(root->right, arr, index);
-}
-
-// Function to count pairs with sum X using two-pointer technique
-int countPairs(int arr1[], int size1, int arr2[], int size2, int X) {
-    int i = 0, j = size2 - 1, count = 0;
-
-    while (i < size1 && j >= 0) {
-        int sum = arr1[i] + arr2[j];
-
-        if (sum == X) {  // Found a pair
-            count++;
-            i++;
-            j--;
-        } else if (sum < X) {
-            i++;  // Move right in BST1
-        } else {
-            j--;  // Move left in BST2
-        }
-    }
-    return count;
-}
-
-// Wrapper function to count pairs from 2 BSTs
-int countPairsFromBSTs(struct Node* root1, struct Node* root2, int X) {
-    // Store elements of BST1 in an array
-    int arr1[100], arr2[100]; 
-    int size1 = 0, size2 = 0;
-
-    storeInorder(root1, arr1, &size1);
-    storeInorder(root2, arr2, &size2);
-
-    // Count pairs
-    return countPairs(arr1, size1, arr2, size2, X);
-}
-
-// Driver Code
-int main() {
-    // BST 1
-    struct Node* root1 = newNode(5);
-    root1->left = newNode(3);
-    root1->right = newNode(7);
-    root1->left->left = newNode(2);
-    root1->left->right = newNode(4);
-
-    // BST 2
-    struct Node* root2 = newNode(10);
-    root2->left = newNode(6);
-    root2->right = newNode(15);
-    root2->left->left = newNode(3);
-    root2->left->right = newNode(8);
-
-    int X = 10;
-    printf("Number of pairs with sum %d: %d\n", X, countPairsFromBSTs(root1, root2, X));
-
-    return 0;
-}
+print("Count of pairs:", countPairs(root1, root2, 11))
